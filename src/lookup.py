@@ -47,7 +47,7 @@ async def on_message(message):
         try:
             await client.send_message(message.channel, genius.genius_search(message.content[8:])[0].form_output())
         except:
-            pass
+            await client.send_message(message.channel, "Couldn't find song!")
         return
 
     if message.content.startswith("!wikilang "):
