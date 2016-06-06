@@ -9,7 +9,8 @@ client = discord.Client()
 
 # Search Depth to get rid of disambiguations
 WIKI_SEARCH_DEPTH = 2
-LANGUAGE = "en"
+LANGUAGE = {}
+USED_CHANNEL = []
 
 def searchWords(message):
     tokens = nltk.word_tokenize(message)
@@ -36,8 +37,13 @@ async def on_ready():
 # Called when the server, the bot is invited into receives a message
 @client.event
 async def on_message(message):
+    if not message.channel in USED_CHANNEL:
+        USED_CHANNEL.append(message.channel)
+        LANGUAGE[message.channel] = "en"
+
     if message.content.startswith("!what "):
         try:
+            wikipedia.set_lang(LANGUAGE[message.channel])
             await client.send_message(message.channel, wikipedia.summary(message.content[6:], sentences=2))
         except:
             pass
@@ -48,10 +54,14 @@ async def on_message(message):
             await client.send_message(message.channel, genius.genius_search(message.content[8:])[0].form_output())
         except:
             await client.send_message(message.channel, "Couldn't find song!")
+        yt = "https://www.youtube.com/results?search_query="
+        for s in message.content[8:].split():
+            yt += s+ "+"
+        await client.send_message(message.channel, yt[:-1])
         return
 
     if message.content.startswith("!wikilang "):
-        wikipedia.set_lang(message.content[10:])
+        LANGUAGE[message.channel] = message.content[10:]
 
     if message.content.startswith("!explain "):
         wrds = searchWords(message.content[9:])
@@ -70,6 +80,7 @@ async def wikiAnswer(client, message, wrds):
             page = { "url": "#error" } # still error if fetch fails
             for x in range(WIKI_SEARCH_DEPTH):
                 try:
+                    wikipedia.set_lang(LANGUAGE[message.channel])
                     page = wikipedia.page(wikipedia.search(w)[x])
                 except:
                     continue
@@ -78,6 +89,16 @@ async def wikiAnswer(client, message, wrds):
                 break
         print(answ)
         await client.send_message(message.channel, answ)
+
+# not used
+async def broadcast():
+    while 1:
+        text = input()
+        for c in USED_CHANNEL:
+            try:
+                client.send_message(c, text)
+            except:
+                pass
 
 if __name__ == "__main__":
     # LookUpAPID contains the token
