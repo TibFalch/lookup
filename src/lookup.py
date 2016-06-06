@@ -9,6 +9,7 @@ client = discord.Client()
 
 # Search Depth to get rid of disambiguations
 WIKI_SEARCH_DEPTH = 2
+LANGUAGE = "en"
 
 def searchWords(message):
     tokens = nltk.word_tokenize(message)
@@ -48,6 +49,9 @@ async def on_message(message):
         except:
             pass
         return
+
+    if message.content.startswith("!wikilang "):
+        wikipedia.set_lang(message.content[10:])
 
     if message.content.startswith("!explain "):
         wrds = searchWords(message.content[9:])

@@ -12,3 +12,5 @@ nltk.download()
 # > d
 # > book
 ```
+
+and on Linux you need to ```sudo apt-get install libffi-dev```
