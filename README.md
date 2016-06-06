@@ -4,7 +4,7 @@ Python Wikipedia Lookup Bot for Discord
 
 ## Setup
 To run the programm you need to download "dictionaries" for use with
-```nltk```.
+``` nltk ```.
 
 ```python
 import nltk
