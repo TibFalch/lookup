@@ -49,6 +49,18 @@ async def on_message(message):
             pass
         return
 
+    if message.content.startswith("!ed "):
+        try:
+            await client.send_message(message.channel, "{:.2f} DKK".format(float(message.content[4:]) * 7.43601))
+        except:
+            pass
+
+    if message.content.startswith("!de "):
+        try:
+            await client.send_message(message.channel, "{:.2f} €".format(float(message.content[4:]) * 0.134481))
+        except:
+            pass
+
     if message.content.startswith("!lyrics "):
         try:
             await client.send_message(message.channel, genius.genius_search(message.content[8:])[0].form_output())
