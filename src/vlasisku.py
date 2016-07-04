@@ -37,7 +37,7 @@ async def vlasisku_search(msg):
         else:
             r = ""
 
-        t = "**{}**:{} \t{}\n{}".format(v.search, r, v.type, v.definition)
+        t = "**{}**:{} \t{}\n{}".format(v.finding, r, v.type, v.definition)
     print(t)
     try:
         await lb.send_message(msg.channel, t[:2000])
