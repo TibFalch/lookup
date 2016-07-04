@@ -36,6 +36,7 @@ class Vlasisku:
             return
         try:
             self.finding = re.sub("(<.*? title=\".*?\">|\s|\n|<.*?>)", "", re.search(p_cma, body, mld).group(1), mld)[2:-2]
+            self.finding = re.sub("(\\n|\n)", " ", self.finding)
         except Exception as e:
             print(e)
             self.finding = self.search
