@@ -30,7 +30,7 @@ class Vlasisku:
             intr = re.search(p_ans, body, mld)
             s = intr.group(1)
             self.type = "search"
-            self.definition = [re.sub("(<.*?>|\s)", "",x) for x in re.findall(p_an2, s, mld)]
+            self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
             self.finding = re.findall(p_an1, s)
             self.num = len(self.finding)
             return
