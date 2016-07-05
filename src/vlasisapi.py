@@ -26,6 +26,7 @@ class Vlasisku:
         res.close()
         try:
             self.definition = re.sub("<.*?>", "", re.search(p_des, body).group(1))
+            self.definition.replace("\\n", "\t")
         except:
             intr = re.search(p_ans, body, mld)
             s = intr.group(1)
