@@ -66,11 +66,32 @@ def tell_all():
     for c in lbc:
         lb.loop.create_task(lb.send_message(c, t))
 
+async def send_as(text, name, back):
+    for c in lbc:
+        try:
+            await lb.change_nickname(c.server.me, name)
+        except :
+            pass #no permission to change own nick
+        await lb.send_message(c, text)
+        try:
+            await lb.change_nickname(c.server.me, back)
+        except:
+            pass #no permission to change own nick
+
+def broadcast(text, name="mibvlasisku", back="mibvlasisku"):
+    lb.loop.create_task(send_as(text[:2000],name,back))
+
 def cliloop():
+    import re
     while True:
         line = str(input("> "))
         if line == "stats":
             tell_all()
+        if line.startswith("say "):
+            broadcast(line[4:])
+        if line.startswith("sayas "):
+            name, text = re.search("sayas (\S*) (.*)", line).groups()
+            broadcast(text, name)
         if line == "quit":
             lb.loop.create_task(lb.logout())
             return
