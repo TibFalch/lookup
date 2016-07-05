@@ -41,6 +41,7 @@ async def vlasisku_search(msg):
         print("forbidden to delete command")
     except discord.errors.HTTPException:
         print("response too long")
+        print(e)
     except Exception as e:
         print("unknown exception:",e)
 
@@ -54,7 +55,8 @@ async def on_message(msg):
     vl = await stwexe(msg, "vl", vlasisku_search)
     if vl and not msg.channel in lbc:
         lbc.append(msg.channel)
-        itc[msg.author.display_name] = itc.get(msg.author.display_name, 0) +1
+    if vl:
+        itc[str(msg.author.display_name)] = itc.get(str(msg.author.display_name), 0) +1
 
 def tell_all():
     t = "**Stats**\n```\n"
