@@ -15,41 +15,42 @@ def furl(search):
     return "http://vlasisku.lojban.org/vlasisku/{}".format(search)
 
 class Vlasisku:
-    def __init__(self, search):
-        self.search = search
-
     def uplink(self):
+        body = self.download()
+        try:
+            self.definition = re.sub("<.*?>", "", re.search(p_des, body).group(1))
+            self.definition.replace("\\n", "\t")
+            self.vlasis(body)
+        except:
+            self.search_results(body)
+
+    def vlasis(self, body):
+        self.finding = cleanCmavo(re.search(p_cma, body, mld).group(1))
+        self.type = re.search(p_typ, body).group(1)
+        try:
+            self.rafsi = re.findall(p_aff, body)[:-1]
+        except:
+            self.rafsi = []
+        try:
+            self.notes = re.sub("<.*?>", "", re.search(p_noe, body).group(1))
+        except:
+            self.notes = "<None>"
+
+    def search_results(self, body):
+        intr = re.search(p_ans, body, mld)
+        s = intr.group(1)
+        self.type = "search"
+        self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
+        self.finding = re.findall(p_an1, s)
+        self.num = len(self.finding)
+
+    def download(self):
         res = urllib.request.urlopen(furl(self.search))
         if res.code != 200:
             raise ValueError('Could not connect to Vlasisku')
         body = str(res.read())
         res.close()
-        try:
-            self.definition = re.sub("<.*?>", "", re.search(p_des, body).group(1))
-            self.definition.replace("\\n", "\t")
-        except:
-            intr = re.search(p_ans, body, mld)
-            s = intr.group(1)
-            self.type = "search"
-            self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
-            self.finding = re.findall(p_an1, s)
-            self.num = len(self.finding)
-            return
-        try:
-            self.finding = re.sub("(<.*? title=\".*?\">|\s|\n|\\n|<.*?>)", "", re.search(p_cma, body, mld).group(1), mld)[2:-2]
-            self.finding = self.finding.replace("\\n", " ").replace(" \\xe2\\x80\\xa6","...")
-        except Exception as e:
-            print(e)
-            self.finding = self.search
-        try:
-            self.rafsi = re.findall(p_aff, body)[:-1]
-        except:
-            self.rafsi = []
-        self.type = re.search(p_typ, body).group(1)
-        try:
-            self.notes = re.sub("<.*?>", "", re.search(p_noe, body).group(1))
-        except:
-            self.notes = "<None>"
+        return body
 
     def debug(self):
         if self.type == "search":
@@ -62,10 +63,25 @@ class Vlasisku:
             print("|",self.type)
             print(self.definition)
 
+    def getrafsi(self, sep="-", beg="-", end="-"):
+        if self.rafsi:
+            return sep + sep.join(self.rafsi) + end
+        return ""
+
+    def __init__(self, search):
+        self.search = search
+
 def get(search):
     v = Vlasisku(search)
     v.uplink()
     return v
+
+def cleanCmavo(text):
+    c = re.sub("(<.*? title=\".*?\">|\s|\n|\\n|<.*?>)", "", text)[2:-2]
+    return c.replace("\\n", " ").replace(" \\xe2\\x80\\xa6","...")
+
+def cleanDefinition(text):
+    return re.sub("<.*?>","",text.replace("\\n", "\t"))
 
 if __name__ == '__main__':
     import sys
