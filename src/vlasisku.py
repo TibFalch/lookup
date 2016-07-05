@@ -33,7 +33,7 @@ async def vlasisku_search(msg):
                 t += "\n*and more:* {}\n".format(vlasisapi.furl(v.search))
                 break
     else:
-        t = "**{}**: {} \t{}\n{}".format(v.finding, v.getrafsi("-","*-","-*"), v.type, v.definition)
+        t = "**{}**: {} \t{}\n{}".format(v.finding, v.getrafsi(), v.type, v.definition)
     try:
         await lb.send_message(msg.channel, t[:2000])
         await lb.delete_message(msg)
@@ -56,7 +56,8 @@ async def on_message(msg):
     if vl and not msg.channel in lbc:
         lbc.append(msg.channel)
     if vl:
-        itc[str(msg.author.display_name)] = itc.get(str(msg.author.display_name), 0) +1
+        c = "@{}#{}".format(msg.author.name, msg.author.discriminator)
+        itc[c] = itc.get(c, 0) + 1
 
 def tell_all():
     t = "**Stats**\n```\n"
