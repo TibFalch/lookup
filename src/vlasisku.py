@@ -56,14 +56,13 @@ async def on_message(msg):
     if vl and not msg.channel in lbc:
         lbc.append(msg.channel)
     if vl:
-        c = "@{}#{}".format(msg.author.name, msg.author.discriminator)
+        c = "{}#{}".format(msg.author.name, msg.author.discriminator)
         itc[c] = itc.get(c, 0) + 1
 
 def tell_all():
-    t = "**Stats**\n```\n"
+    t = "**Stats**\n"
     for u, n in itc.items():
-        t += "{}: {}\n".format(str(u), n)
-    t += "```"
+        t += "{} : {}\n".format(str(u), n)
     for c in lbc:
         lb.loop.create_task(lb.send_message(c, t))
 
