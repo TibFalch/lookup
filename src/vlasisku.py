@@ -4,12 +4,16 @@ import discord
 import vlasisapi
 
 lb = discord.Client()
+lbc = []
+itc = dict()
 
 async def stwexe(msg, prefix, func):
     s = "!{} ".format(prefix)
     if msg.content.startswith(s):
         msg.content = msg.content[len(s):]
         await func(msg)
+        return True
+    return False
 
 async def vlasisku_search(msg):
     v = None
@@ -29,7 +33,7 @@ async def vlasisku_search(msg):
                 t += "\n*and more:* {}\n".format(vlasisapi.furl(v.search))
                 break
     else:
-        t = "**{}**:{} \t{}\n{}".format(v.finding, v.getrafsi(), v.type, v.definition)
+        t = "**{}**: {} \t{}\n{}".format(v.finding, v.getrafsi("-","*-","-*"), v.type, v.definition)
     try:
         await lb.send_message(msg.channel, t[:2000])
         await lb.delete_message(msg)
@@ -37,15 +41,42 @@ async def vlasisku_search(msg):
         print("forbidden to delete command")
     except discord.errors.HTTPException:
         print("response too long")
+    except Exception as e:
+        print("unknown exception:",e)
 
 @lb.event
 async def on_ready():
-    print("lb: ready")
+    #print("lb: ready")
+    pass
 
 @lb.event
 async def on_message(msg):
-    await stwexe(msg, "vl", vlasisku_search)
+    vl = await stwexe(msg, "vl", vlasisku_search)
+    if vl and not msg.channel in lbc:
+        lbc.append(msg.channel)
+        itc[msg.author.display_name] = itc.get(msg.author.display_name, 0) +1
+
+def tell_all():
+    t = "**Stats**\n```\n"
+    for u, n in itc.items():
+        t += "{}: {}\n".format(str(u), n)
+    t += "```"
+    for c in lbc:
+        lb.loop.create_task(lb.send_message(c, t))
+
+def cliloop():
+    while True:
+        line = str(input("> "))
+        if line == "stats":
+            tell_all()
+        if line == "quit":
+            lb.loop.create_task(lb.logout())
+            return
 
 if __name__ == "__main__":
     import threading
+    import sys
+    t = threading.Thread(target=cliloop, daemon=True)
+    t.start()
     lb.run(os.environ["MIBVLASISKU"])
+    sys.exit(0)
