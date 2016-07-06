@@ -1,5 +1,7 @@
 #!/usr/bin/env python3.5
+import vlasisapi as vl
 
+debug = True
 vowels = "aeiou" # not including y
 rafsco = {
     "CVCCVf" : 1,
@@ -10,6 +12,10 @@ rafsco = {
     "CVV" : 8,
     "CCV" : 7,
 }
+
+def pd(*s):
+    if debug:
+        print(*s)
 
 def isVowel(c):
     return c in vowels or c == "y"
@@ -22,7 +28,7 @@ def rafsiForm(rafsi):
     for c in rafsi:
         if c == "'":
             continue
-        r += "V" if isVowel(c) else "C"
+        r += "V" if c in vowels else "C"
     return r
 
 def rafsiScore(rafsi, final=False):
@@ -31,7 +37,7 @@ def rafsiScore(rafsi, final=False):
         final = True
     elif len(form) == 5:
         form = form[4]
-        print("reduced form to", form)
+        pd("reduced form to", form)
     form = form if not final else form + "f"
     sc = rafsco.get(form, None)
     if sc == 8 and "'" in rafsi:
@@ -40,6 +46,7 @@ def rafsiScore(rafsi, final=False):
 
 def splitLujvo(lujvo):
     form = rafsiForm(lujvo)
+    pd(lujvo, form)
     rafs = []
     i = 0
     o = 0 #offset because '
@@ -54,7 +61,7 @@ def splitLujvo(lujvo):
                     o += 1
                 i += 5
                 continue
-            elif i+5 == len(lujvo):
+            elif i+5+o == len(lujvo):
                 rafs.append(lujvo[i+o:i+o+5])
                 break
         if form[i:i+3] in rafsco.keys():
@@ -66,19 +73,19 @@ def splitLujvo(lujvo):
                 pi = i+4
                 for x in range(2):
                     if form[pi:pi+3+x] in rafsco.keys():
-                        print("Proposed skip useful")
+                        pd("Proposed skip useful")
                         i += 1
                         break
             i += 3
         else:
-            print("redo")
+            pd("redo")
             li += 1
             for x in range(li):
                 r = rafs.pop()
                 if "'" in r:
                     o -= 1
 
-        print(rafs)
+        pd(rafs)
     return rafs
 
 def htoapo(st):
@@ -99,9 +106,33 @@ def score(lujvo):
     for c in lujvo:
         if c in vowels:
             V += 1
-    print(L, A, H, R, V)
+    pd(lujvo, L, A, H, R, V)
     return 1000*L - 500*A + 100*H - 10*R - V
 
+def possibleLujvo(*gismo):
+    gismo=gismo[0]
+    pd(gismo)
+    rafsi = [x for x in [a.rafsi for a in [vl.get(g) for g in gismo]]]
+    for g in range(len(rafsi)):
+        for r in range(len(rafsi[g])):
+            rafsi[g][r] = rafsi[g][r].replace("\\","")
+        if g == len(rafsi) - 1:
+            rafsi[g] = [gismo[g]] + rafsi[g]
+            continue
+        rafsi[g] = [r+e for r in rafsi[g] for e in "yrn"] + rafsi[g]
+        rafsi[g].append(gismo[g][:-1]+"y")
+    pd(rafsi)
+    combine = lambda words, rest: combine([w+n for w in words for n in rest[0]], rest[1:]) if len(rest) else words
+    rafsi = combine(rafsi[0], rafsi[1:] if len(rafsi)>1 else [])
+    pd(rafsi)
+    return rafsi
+
+def bestLujvo(*gismo):
+    pos = possibleLujvo(gismo[0])
+    pos = [(p,score(p)) for p in pos]
+    pd(pos)
+    pos.sort(key=lambda a: a[1])
+    return pos
 
 if __name__ == '__main__':
     import sys
@@ -115,3 +146,8 @@ if __name__ == '__main__':
         print(rafs)
         for r in rafs:
             print(r, rafsiScore(r))
+    elif sys.argv[1] == "-p":
+        pos = bestLujvo(sys.argv[2:])
+        pos.reverse()
+        for l in pos:
+            print(l[0], l[1])

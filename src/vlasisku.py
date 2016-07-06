@@ -2,6 +2,7 @@
 import os
 import discord
 import vlasisapi
+import lujvo
 
 lb = discord.Client()
 lbc = []
@@ -14,6 +15,21 @@ async def stwexe(msg, prefix, func):
         await func(msg)
         return True
     return False
+
+async def lujvo_combine(msg):
+    try:
+        await lb.send_message(msg.channel, "**{}** {}".format(*(lujvo.bestLujvo(msg.content.split(" "))[0])))
+    except Exception as e:
+        await lb.send_message(msg.channel, "Error while processing request\n"+str(e))
+
+async def lujvo_split(msg):
+    try:
+        raf = lujvo.splitLujvo(msg.content)
+        print(raf)
+        t = "-".join(raf)
+        await lb.send_message(msg.channel, "**"+t+"**")
+    except Exception as e:
+        await lb.send_message(msg.channel, "Error while processing request\n"+str(e))
 
 async def vlasisku_search(msg):
     v = None
@@ -53,6 +69,8 @@ async def on_ready():
 @lb.event
 async def on_message(msg):
     vl = await stwexe(msg, "vl", vlasisku_search)
+    vl = vl or await stwexe(msg, "lc", lujvo_combine)
+    vl = vl or await stwexe(msg, "ls", lujvo_split)
     if vl and not msg.channel in lbc:
         lbc.append(msg.channel)
     if vl:
