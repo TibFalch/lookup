@@ -12,24 +12,26 @@ async def stwexe(msg, prefix, func):
     s = "!{} ".format(prefix)
     if msg.content.startswith(s):
         msg.content = msg.content[len(s):]
-        await func(msg)
+        try:
+            await func(msg)
+        except discord.HTTPException:
+            await reply(msg, "Dicsord HTTP Error")
+        except Exception as e:
+            await reply(msg, "Internal Error\n"+str(e))
         return True
     return False
 
+async def reply(msg, text):
+    await lb.send_message(msg.channel, texts)
+
 async def lujvo_combine(msg):
-    try:
-        await lb.send_message(msg.channel, "**{}** {}".format(*(lujvo.bestLujvo(msg.content.split(" "))[0])))
-    except Exception as e:
-        await lb.send_message(msg.channel, "Error while processing request\n"+str(e))
+    await reply(msg, "**{}** {}".format(*(lujvo.bestLujvo(msg.content.split(" "))[0])))
 
 async def lujvo_split(msg):
-    try:
-        raf = lujvo.splitLujvo(msg.content)
-        print(raf)
-        t = "-".join(raf)
-        await lb.send_message(msg.channel, "**"+t+"**")
-    except Exception as e:
-        await lb.send_message(msg.channel, "Error while processing request\n"+str(e))
+    raf = lujvo.splitLujvo(msg.content)
+    print(raf)
+    t = "-".join(raf)
+    await reply(msg, "**"+t+"**")
 
 async def vlasisku_search(msg):
     v = None
@@ -37,7 +39,7 @@ async def vlasisku_search(msg):
         v = vlasisapi.get(msg.content)
     except:
         await lb.delete_message(msg)
-        await lb.send_message(msg.channel, "Could not find **{}**".format(msg.content))
+        await reply(msg, "Could not find **{}**".format(msg.content))
     if v is None:
         return
     t = ""
@@ -51,7 +53,7 @@ async def vlasisku_search(msg):
     else:
         t = "**{}**: {} \t{}\n{}".format(v.finding, v.getrafsi(), v.type, v.definition)
     try:
-        await lb.send_message(msg.channel, t[:2000])
+        await reply(msg, t[:2000])
         await lb.delete_message(msg)
     except discord.errors.Forbidden:
         print("forbidden to delete command")
