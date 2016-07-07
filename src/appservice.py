@@ -117,14 +117,16 @@ class Vlasis(socketserver.BaseRequestHandler):
         global c
         # self.request is the TCP socket connected to the client
         self.data = self.request.recv(1024).strip()
-
-        req = re.search("GET \/\?r=(.*) HTTP\/1\.1", str(self.data,"utf8"), re.DOTALL)
-        answ = "... enter your request ..."
-        if req is not None and len(req.groups()) == 1:
-            req = req.group(1)
-            req = req.replace("%27", "'").replace("+", " ")
-            print(req)
-            answ = self.lookup(req)
+        try:
+            req = re.search("GET \/\?r=(.*) HTTP\/1\.1", str(self.data,"utf8"), re.DOTALL)
+            answ = "... enter your request ..."
+            if req is not None and len(req.groups()) == 1:
+                req = req.group(1)
+                req = req.replace("%27", "'").replace("+", " ")
+                print(req)
+                answ = self.lookup(req)
+        except Exception as e:
+            answ = "An error occurred:<br>{}".format(e)
 
 
         self.request.sendall(self.append(answ))
