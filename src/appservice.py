@@ -12,9 +12,8 @@ with open("favi.png", "rb") as df:
     favi = df.read()
 with open("start.png", "rb") as df:
     star = df.read()
-picheader = b"""HTTP/1.1 418 OK
+picheader = b"""HTTP/1.1 200 OK
 Content-Type: image/png
-Connection: close
 
 """
 
