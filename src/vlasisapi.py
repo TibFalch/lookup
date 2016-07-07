@@ -17,6 +17,7 @@ def furl(search):
 class Vlasisku:
     def uplink(self):
         body = self.download()
+        self.rafsi = []
         try:
             self.definition = re.sub("<.*?>", "", re.search(p_des, body).group(1))
             self.definition.replace("\\n", "\t")
@@ -30,19 +31,27 @@ class Vlasisku:
         try:
             self.rafsi = re.findall(p_aff, body)[:-1]
         except:
-            self.rafsi = []
+            pass
         try:
-            self.notes = re.sub("<.*?>", "", re.search(p_noe, body).group(1))
+            self.notes = re.sub("(<a.*?\">|<.*?>)", "", re.search(p_noe, body).group(1))
         except:
-            self.notes = "<None>"
+            self.notes = None
 
     def search_results(self, body):
         intr = re.search(p_ans, body, mld)
-        s = intr.group(1)
-        self.type = "search"
-        self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
-        self.finding = re.findall(p_an1, s)
-        self.num = len(self.finding)
+        try:
+            s = intr.group(1)
+            self.type = "search"
+            self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
+            self.finding = re.findall(p_an1, s)
+            self.notes = None
+            self.num = len(self.finding)
+        except:
+            self.type = None
+            self.notes = None
+            self.definition = None
+            self.finding = None
+            self.num = 0
 
     def download(self):
         res = urllib.request.urlopen(furl(self.search))
