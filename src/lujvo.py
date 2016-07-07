@@ -113,15 +113,16 @@ def possibleLujvo(*gismo):
     gismo=gismo[0]
     pd(gismo)
     rafsi = [x for x in [a.rafsi for a in [vl.get(g) for g in gismo]]]
+    pd(rafsi)
     for g in range(len(rafsi)):
         for r in range(len(rafsi[g])):
             rafsi[g][r] = rafsi[g][r].replace("\\","")
         if g == len(rafsi) - 1:
-            rafsi[g] = [gismo[g]] + rafsi[g]
             rafsi[g] = [r for r in rafsi[g] if r[-1] in "aeiou"]
             continue
         rafsi[g] = [r+e for r in rafsi[g] for e in "yrn"] + rafsi[g]
-        rafsi[g].append(gismo[g][:-1]+"y")
+        if len(gismo[g])>3:
+            rafsi[g].append(gismo[g][:-1]+"y")
     pd(rafsi)
     combine = lambda words, rest: combine([w+n for w in words for n in rest[0] if (w[-1] in "aeiouy" or n[0] in "aeiou") or len(w) < 5], rest[1:]) if len(rest) else words
     rafsi = combine(rafsi[0], rafsi[1:] if len(rafsi)>1 else [])
