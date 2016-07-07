@@ -7,6 +7,16 @@ import vlasisapi as vl
 import traceback
 
 lujvo.debug = True
+favi, star = None, None
+with open("favi.png", "rb") as df:
+    favi = df.read()
+with open("start.png", "rb") as df:
+    star = df.read()
+picheader = b"""HTTP/1.1 418 OK
+Content-Type: image/png
+Connection: close
+
+"""
 
 def pd(p, d):
     if d is None:
@@ -28,6 +38,9 @@ class Vlasis(socketserver.BaseRequestHandler):
         <title>mibvlasisku</title>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+        <link rel="shortcut icon" type="image/png" href="/favi.png"/>
+        <link rel="apple-touch-icon" href="/favi.png">
+        <link rel="apple-touch-startup-image" href="/start.png"/>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <style>
@@ -149,12 +162,21 @@ class Vlasis(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         try:
             req = re.search("GET \/\?r=(.*) HTTP\/1\.1", str(self.data,"utf8"), re.DOTALL)
-            answ = "... enter your request ..."
+            answ = "made by /u/mtib"
             if req is not None and len(req.groups()) == 1:
                 req = req.group(1)
                 req = req.replace("%27", "'").replace("+", " ")
                 print(req)
                 answ = self.lookup(req)
+            res = re.search("GET \/(.*)\.png HTTP", str(self.data,"utf8"))
+            if res is not None and len(res.groups()) == 1:
+                res = res.group(1)
+                if res == "start":
+                    self.request.sendall(picheader + star)
+                elif res == "favi":
+                    self.request.sendall(picheader + favi)
+                else:
+                    answ = "that resource does not exist"
         except Exception:
             answ = "An error occurred:<br>{}".format(traceback.format_exc())
 
