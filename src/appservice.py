@@ -136,7 +136,7 @@ class Vlasis(socketserver.BaseRequestHandler):
             print(e)
         if " " not in req:
             try:
-                split = ["<a href=\"?r={0}\">{0}</a>".format(r) for r in lujvo.splitLujvo(req)]
+                split = ["<a href=\"/?r={0}\">{0}</a>".format(r) for r in lujvo.splitLujvo(req)]
                 if not (len(split) == 1 and split[0] == req):
                     answ += pd("Split into Rafsi", " - ".join(split))
             except:
@@ -149,7 +149,7 @@ class Vlasis(socketserver.BaseRequestHandler):
         else:
             lujv = lujvo.bestLujvo(req.split(" "))
             if lujv and lujv != "":
-                answ += pd("Concatenated Lujvo", "<a href=\"?r={0}\">{0}</a>: {1}".format(*(lujv[0])))
+                answ += pd("Concatenated Lujvo", "<a href=\"/?r={0}\">{0}</a>: {1}".format(*(lujv[0])))
                 answ += pd("Other valid Lujvo", "<br>".join(["{}: {}".format(a,b) for (a,b) in lujv]))
         answ += "<p>" + note.replace("\\n","</p><p>").replace("\\","") + "</p>"
         answ += "</dl>"
