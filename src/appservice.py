@@ -173,11 +173,13 @@ class Vlasis(socketserver.BaseRequestHandler):
                 res = res.group(1)
                 if res == "start":
                     self.request.sendall(picheader + star)
+                    return
                 elif res == "favi":
                     self.request.sendall(picheader + favi)
+                    return
                 else:
                     answ = "that resource does not exist"
-                return
+
         except Exception:
             answ = "An error occurred:<br>{}".format(traceback.format_exc())
 
