@@ -118,6 +118,7 @@ def possibleLujvo(*gismo):
             rafsi[g][r] = rafsi[g][r].replace("\\","")
         if g == len(rafsi) - 1:
             rafsi[g] = [gismo[g]] + rafsi[g]
+            rafsi[g] = [r for r in rafsi[g] if r[-1] in "aeiou"]
             continue
         rafsi[g] = [r+e for r in rafsi[g] for e in "yrn"] + rafsi[g]
         rafsi[g].append(gismo[g][:-1]+"y")
