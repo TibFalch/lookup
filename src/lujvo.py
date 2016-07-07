@@ -123,7 +123,7 @@ def possibleLujvo(*gismo):
         rafsi[g] = [r+e for r in rafsi[g] for e in "yrn"] + rafsi[g]
         rafsi[g].append(gismo[g][:-1]+"y")
     pd(rafsi)
-    combine = lambda words, rest: combine([w+n for w in words for n in rest[0]], rest[1:]) if len(rest) else words
+    combine = lambda words, rest: combine([w+n for w in words for n in rest[0] if (w[-1] in "aeiouy" or n[0] in "aeiou")], rest[1:]) if len(rest) else words
     rafsi = combine(rafsi[0], rafsi[1:] if len(rafsi)>1 else [])
     pd(rafsi)
     return rafsi
