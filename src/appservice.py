@@ -87,6 +87,17 @@ class Vlasis(socketserver.BaseRequestHandler):
         <div id="response">
         """+af+"""
         </div>
+        <script>
+            var a=document.getElementsByTagName("a");
+            for(var i=0;i<a.length;i++)
+            {
+                a[i].onclick=function()
+                {
+                    window.location=this.getAttribute("href");
+                    return false
+                }
+            }
+        </script>
         </body>
         </html>""", "utf8")
 
@@ -122,6 +133,7 @@ class Vlasis(socketserver.BaseRequestHandler):
                     raise ValueError("Could not find "+req)
                 else:
                     answ = hd("{} -> {} {}".format(req, vlasis.finding, "" if last is None else last)) + answ
+                    req = vlasis.finding
             else:
                 answ = hd(req) + answ
             vlasis.definition = vlasis.definition.replace("\\n", "<br>").replace("\\","")
