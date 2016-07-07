@@ -177,6 +177,7 @@ class Vlasis(socketserver.BaseRequestHandler):
                     self.request.sendall(picheader + favi)
                 else:
                     answ = "that resource does not exist"
+                return
         except Exception:
             answ = "An error occurred:<br>{}".format(traceback.format_exc())
 
