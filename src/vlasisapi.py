@@ -42,7 +42,7 @@ class Vlasisku:
         try:
             s = intr.group(1)
             self.type = "search"
-            self.definition = [re.sub("(<.*?>)", "",x) for x in re.findall(p_an2, s, mld)]
+            self.definition = [re.sub("(<.*?>|\\\\)", "",x) for x in re.findall(p_an2, s, mld)]
             self.finding = re.findall(p_an1, s)
             self.notes = None
             self.num = len(self.finding)

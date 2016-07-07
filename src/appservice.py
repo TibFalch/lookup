@@ -4,10 +4,13 @@ import socket
 import re
 import lujvo
 import vlasisapi as vl
+import traceback
 
 lujvo.debug = True
 
 def pd(p, d):
+    if d is None:
+        return ""
     return "<dh>{}</dh><dd>{}</dd>".format(p,d)
 
 def hd(t):
@@ -58,6 +61,10 @@ class Vlasis(socketserver.BaseRequestHandler):
             padding: 0;
             margin: 0;
         }
+        a {
+            color: #d72121;
+            text-decoration: none;
+        }
         </style>
         </head>
         <body>
@@ -85,31 +92,52 @@ class Vlasis(socketserver.BaseRequestHandler):
             return ""
 
     def lookup(self, req):
-        answ = hd(req)
-        answ += "<dl>"
+        answ = "<dl>"
         note = ""
         callFunc = self.callFunc
         try:
             vlasis = vl.get(req)
+            last = None
+            if type(vlasis.finding) == list:
+                last = "({})".format(len(vlasis.finding))
+                vlasis = vl.get(vlasis.finding[0])
+            vlasis.finding = vlasis.finding.replace("\\", "")
+            vlasis.definition = vlasis.definition.replace("\\n", "<br>").replace("\\","")
+            vlasis.type = vlasis.type.replace("\\", "")
+            if req != vlasis.finding:
+                if vlasis.finding is None:
+                    answ = hd("Could not find: \"{}\"".format(req)) + answ
+                else:
+                    answ = hd("{} -> {} {}".format(req, vlasis.finding, "" if last is None else last)) + answ
+            else:
+                answ = hd(req) + answ
+            answ += pd("Definition ({})".format(vlasis.finding), vlasis.definition)
             r = vlasis.getrafsi()
             if r != "":
                 answ += pd("Rafsi", r.replace("\\", ""))
-            answ += pd("Definition ({})".format(vlasis.finding), vlasis.definition)
             answ += pd("Type ({})".format(vlasis.finding), vlasis.type)
             note = pd("Notes ({})".format(vlasis.finding), vlasis.notes)
         except Exception as e:
             print(e)
             raise e # DEBUG
         if " " not in req:
-            answ += callFunc("split lujvo", lujvo.splitLujvo,req)
-            answ += callFunc("score", lujvo.score,req)
-            answ += callFunc("form", lujvo.rafsiForm, req)
+            try:
+                split = ["<a href=\"?r={0}\">{0}</a>".format(r) for r in lujvo.splitLujvo(req)]
+                if not (len(split) == 1 and split[0] == req):
+                    answ += pd("Split into Rafsi", " - ".join(split))
+            except:
+                pass
+            answ += callFunc("Word Score ({})".format(req), lujvo.score, req)
+            answ += callFunc("C-V Form ({})".format(req), lujvo.rafsiForm, req)
+            if req != vlasis.finding:
+                answ += callFunc("Word Score ({})".format(vlasis.finding), lujvo.score, vlasis.finding)
+                answ += callFunc("C-V Form ({})".format(vlasis.finding), lujvo.rafsiForm, vlasis.finding)
         else:
-            luj = callFunc("create lujvo", lujvo.bestLujvo,req.split(" "), re=True)
-            if luj != "":
-                answ += pd("create lujvo", "{}: {}".format(*(luj[0])))
-                answ += pd("possible lujvo", "<br>".join(["{}: {}".format(a,b) for (a,b) in luj]))
-        answ += note.replace("\\n","<br>")
+            lujv = lujvo.bestLujvo(req.split(" "))
+            if lujv and lujv != "":
+                answ += pd("Concatenated Lujvo", "<a href=\"?r={0}\">{0}</a>: {1}".format(*(lujv[0])))
+                answ += pd("Other valid Lujvo", "<br>".join(["{}: {}".format(a,b) for (a,b) in lujv]))
+        answ += "<p>" + note.replace("\\n","</p><p>").replace("\\","") + "</p>"
         answ += "</dl>"
         return answ
 
@@ -125,8 +153,8 @@ class Vlasis(socketserver.BaseRequestHandler):
                 req = req.replace("%27", "'").replace("+", " ")
                 print(req)
                 answ = self.lookup(req)
-        except Exception as e:
-            answ = "An error occurred:<br>{}".format(e)
+        except Exception:
+            answ = "An error occurred:<br>{}".format(traceback.format_exc())
 
 
         self.request.sendall(self.append(answ))
