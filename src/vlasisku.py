@@ -22,7 +22,7 @@ async def stwexe(msg, prefix, func):
     return False
 
 async def reply(msg, text):
-    await lb.send_message(msg.channel, texts)
+    await lb.send_message(msg.channel, text)
 
 async def lujvo_combine(msg):
     await reply(msg, "**{}** {}".format(*(lujvo.bestLujvo(msg.content.split(" "))[0])))
