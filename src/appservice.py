@@ -101,9 +101,9 @@ class Vlasis(socketserver.BaseRequestHandler):
             if type(vlasis.finding) == list:
                 last = "({})".format(len(vlasis.finding))
                 vlasis = vl.get(vlasis.finding[0])
-            vlasis.finding = vlasis.finding.replace("\\", "")
-            vlasis.definition = vlasis.definition.replace("\\n", "<br>").replace("\\","")
-            vlasis.type = vlasis.type.replace("\\", "")
+                if vlasis.finding != None:
+                    vlasis.finding = vlasis.finding.replace("\\", "")
+
             if req != vlasis.finding:
                 if vlasis.finding is None:
                     answ = hd("Could not find: \"{}\"".format(req)) + answ
@@ -111,6 +111,8 @@ class Vlasis(socketserver.BaseRequestHandler):
                     answ = hd("{} -> {} {}".format(req, vlasis.finding, "" if last is None else last)) + answ
             else:
                 answ = hd(req) + answ
+            vlasis.definition = vlasis.definition.replace("\\n", "<br>").replace("\\","")
+            vlasis.type = vlasis.type.replace("\\", "")
             answ += pd("Definition ({})".format(vlasis.finding), vlasis.definition)
             r = vlasis.getrafsi()
             if r != "":
