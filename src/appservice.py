@@ -119,6 +119,7 @@ class Vlasis(socketserver.BaseRequestHandler):
             if req != vlasis.finding:
                 if vlasis.finding is None:
                     answ = hd("Could not find: \"{}\"".format(req)) + answ
+                    raise ValueError("Could not find "+req)
                 else:
                     answ = hd("{} -> {} {}".format(req, vlasis.finding, "" if last is None else last)) + answ
             else:
@@ -133,7 +134,6 @@ class Vlasis(socketserver.BaseRequestHandler):
             note = pd("Notes ({})".format(vlasis.finding), vlasis.notes)
         except Exception as e:
             print(e)
-            raise e # DEBUG
         if " " not in req:
             try:
                 split = ["<a href=\"?r={0}\">{0}</a>".format(r) for r in lujvo.splitLujvo(req)]
