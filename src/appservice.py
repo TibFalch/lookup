@@ -35,7 +35,8 @@ class Vlasis(socketserver.BaseRequestHandler):
             margin: auto auto;
         }
         form {
-            padding: 5px;
+            padding: 1px 5px;
+            margin: 0;
         }
         form * {
             width: 100%;
@@ -47,14 +48,19 @@ class Vlasis(socketserver.BaseRequestHandler):
             padding-bottom: 1em;
         }
         #response {
-            padding: 10px;
+            padding: 7px 10px;
+            margin: 0;
+        }
+        h3 {
+            padding: 0;
+            margin: 0;
         }
         </style>
         </head>
         <body>
         <form method="GET" action="/">
         <input type="text" name="r" placeholder="input"></input><br>
-        <input type="submit"></input>
+        <input type="submit" style="display:none;"></input>
         </form>
         <div id="response">
         """+af+"""
