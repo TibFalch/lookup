@@ -24,7 +24,7 @@ class Vlasis(socketserver.BaseRequestHandler):
         <head>
         <title>mibvlasisku</title>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <style>
@@ -50,6 +50,9 @@ class Vlasis(socketserver.BaseRequestHandler):
         #response {
             padding: 7px 10px;
             margin: 0;
+        }
+        input[type="text"] {
+            font-size: 200%;
         }
         h3 {
             padding: 0;
