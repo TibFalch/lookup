@@ -165,7 +165,7 @@ class Vlasis(socketserver.BaseRequestHandler):
                 answ = re.sub("-> .*?<\/h", "-> {}</h".format(lujv[0][0]), answ)
         see_also = ""
         try:
-            sare = "See also (.*)\."
+            sare = "See also (.*?)\."
             see_also = re.search(sare, note)
             if see_also is not None and see_also.groups():
                 note = re.sub(sare, "", note)
