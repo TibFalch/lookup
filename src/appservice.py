@@ -23,7 +23,7 @@ def pd(p, d):
     return "<dh>{}</dh><dd>{}</dd>".format(p,d)
 
 def hd(t):
-    return "<h3 id=\"{0}\">{0}</h3>".format(t)
+    return "<h3 id=\"def\">{0}</h3>".format(t)
 
 class Vlasis(socketserver.BaseRequestHandler):
 
@@ -133,7 +133,6 @@ class Vlasis(socketserver.BaseRequestHandler):
                     raise ValueError("Could not find "+req)
                 else:
                     answ = hd("{} -> {} {}".format(req, vlasis.finding, "" if last is None else last)) + answ
-                    req = vlasis.finding
             else:
                 answ = hd(req) + answ
             vlasis.definition = vlasis.definition.replace("\\n", "<br>").replace("\\","")
@@ -163,6 +162,7 @@ class Vlasis(socketserver.BaseRequestHandler):
             if lujv and lujv != "":
                 answ += pd("Concatenated Lujvo", "<a href=\"/?r={0}\">{0}</a>: {1}".format(*(lujv[0])))
                 answ += pd("Other valid Lujvo", "<br>".join(["{}: {}".format(a,b) for (a,b) in lujv]))
+                answ = re.sub("-> .*?<\/h", "-> {}</h".format(lujv[0][0]), answ)
         see_also = ""
         try:
             sare = "See also (.*)\."
