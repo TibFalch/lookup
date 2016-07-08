@@ -28,6 +28,8 @@ def rafsiForm(rafsi):
     for c in rafsi:
         if c == "'":
             continue
+        if c == " ":
+            break
         r += "V" if c in vowels else "C"
     return r
 

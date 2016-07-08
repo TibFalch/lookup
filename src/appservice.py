@@ -124,8 +124,8 @@ class Vlasis(socketserver.BaseRequestHandler):
             if type(vlasis.finding) == list:
                 last = "({})".format(len(vlasis.finding))
                 vlasis = vl.get(vlasis.finding[0])
-                if vlasis.finding != None:
-                    vlasis.finding = vlasis.finding.replace("\\", "")
+            if vlasis.finding != None:
+                vlasis.finding = vlasis.finding.replace("\\", "")
 
             if req != vlasis.finding:
                 if vlasis.finding is None:
