@@ -163,6 +163,17 @@ class Vlasis(socketserver.BaseRequestHandler):
             if lujv and lujv != "":
                 answ += pd("Concatenated Lujvo", "<a href=\"/?r={0}\">{0}</a>: {1}".format(*(lujv[0])))
                 answ += pd("Other valid Lujvo", "<br>".join(["{}: {}".format(a,b) for (a,b) in lujv]))
+        see_also = ""
+        try:
+            sare = "See also (.*)\."
+            see_also = re.search(sare, note)
+            if see_also is not None and see_also.groups():
+                note = re.sub(sare, "", note)
+                note += "See also:"
+                for wrd in see_also.group(1).split(", "):
+                    note += " <a href=\"/?r={0}\">{0}</a>".format(wrd)
+        except:
+            pass
         answ += "<p>" + note.replace("\\n","</p><p>").replace("\\","") + "</p>"
         answ += "</dl>"
         return answ
